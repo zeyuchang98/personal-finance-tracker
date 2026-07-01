@@ -38,33 +38,43 @@ live in a local SQLite file (`finance.db`) and never leave your computer.
 
 ## Setup
 
-Requires Python 3.10+, a [Plaid](https://plaid.com) account (free sandbox works),
-and an [Anthropic API key](https://console.anthropic.com).
+You need three things, all free to start:
+
+1. **Python 3.10+**
+2. A **[Plaid](https://dashboard.plaid.com) account.** New accounts get a free
+   **Trial plan** — real data from up to **10 banks**, auto-approved with no
+   review — so you can connect your actual bank right away. (Bigger scale or
+   certain OAuth banks need full Production approval, ~2 business days.) Grab your
+   `client_id` and **Production** secret from the dashboard.
+3. An **[Anthropic API key](https://console.anthropic.com)** for classification.
 
 ```bash
 git clone <your-fork-url> && cd "accounting app"
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-cp .env.example .env          # then fill in your keys (see below)
+cp .env.example .env          # then paste in your keys (see below)
 python app.py                 # http://localhost:5001
 ```
 
 The SQLite database and your personal `categorization_guide.md` are **created
-automatically on first run** — there is no database to set up. Each user just
-needs their own `.env` and connects their own bank.
+automatically on first run** — there is no database to set up.
 
 ### `.env`
 
 ```
 PLAID_CLIENT_ID=...        # from the Plaid dashboard
-PLAID_SECRET=...           # the secret for your PLAID_ENV
-PLAID_ENV=sandbox          # sandbox | production
+PLAID_SECRET=...           # the secret for the environment below
+PLAID_ENV=production       # production = your real banks; sandbox = fake test data
 ANTHROPIC_API_KEY=sk-ant-...
 CLAUDE_MODEL=claude-haiku-4-5-20251001
 FLASK_SECRET=change_me
 PORT=5001                  # 5000 is taken by macOS AirPlay
 ```
+
+> **Just want to see it first?** Set `PLAID_ENV=sandbox` with your sandbox secret,
+> run the app, click **Connect Bank**, and log in with `user_good` / `pass_good`
+> for instant fake data — no real account needed.
 
 ## Usage
 
