@@ -1,0 +1,22 @@
+# Secrets
+.env
+
+# Local data (each user's own financial database)
+*.db
+
+# Personal categorization guide (accumulates your own rules / names).
+# A clean template ships as categorization_guide.example.md.
+categorization_guide.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Test / scratch artifacts
+_test_*.py
+
+# macOS
+.DS_Store
+**/.DS_Store

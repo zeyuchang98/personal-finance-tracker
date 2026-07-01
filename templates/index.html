@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personal Finance Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+  <header>
+   <div class="bar">
+    <h1>Personal Finance Tracker</h1>
+    <div class="actions">
+      <button id="connect-btn">Connect Bank</button>
+      <button id="sync-btn">Sync</button>
+      <span id="status"></span>
+      <div class="menu">
+        <button id="tools-toggle" class="icon-btn" title="More tools" aria-label="More tools">⚙</button>
+        <div id="tools-menu" class="menu-panel" hidden>
+          <button id="reclassify-3m-btn" title="Redo Claude classification for non-manual rows from the last 3 months (fast); calls the Claude API">Re-classify last 3 months</button>
+          <button id="reclassify-24m-btn" title="Redo Claude classification for non-manual rows from the last 24 months; calls the Claude API">Re-classify last 24 months</button>
+          <button id="reclassify-btn" title="Redo Claude classification for all non-manual rows (manual rows untouched); calls the Claude API">Re-classify all</button>
+          <button id="reannotate-btn" title="Re-finalize spending fields from current labels + re-run cc-payment pairing (no Claude call)">Re-apply de-noise</button>
+          <button id="resync-btn" title="Reset Plaid cursors and re-sync from scratch; cleans up old pending/posted duplicate rows">Re-sync from scratch</button>
+          <button id="reset-learning-btn" title="Delete learned rules + trusted-merchant records (keeps your guide, categories, transactions, and manual edits). Re-classify afterwards.">Clear learned rules &amp; trust</button>
+          <button id="rewalk-btn" title="Full re-walk: clear rules + trust AND un-pin manual edits (except Ignore) so Re-classify redoes everything from the current guide.">Re-walk from guide (clear manual too)</button>
+          <button id="manage-data-btn" title="View and delete individual learned rules, trusted merchants, and ignored transactions">Manage rules / trust / ignored</button>
+          <div class="menu-sep">Sandbox / dev</div>
+          <button id="sandbox-btn" title="Sandbox only: connect First Platypus Bank with test data, no popup">Sandbox quick connect</button>
+          <button id="seed-btn" title="Sandbox only: connect a custom user covering all de-noise cases">Seed de-noise data</button>
+        </div>
+      </div>
+    </div>
+   </div>
+  </header>
+
+  <section class="controls">
+    <div class="seg" id="gran-toggle">
+      <button data-p="monthly" class="on">Monthly</button>
+      <button data-p="quarterly">Quarterly</button>
+      <button data-p="yearly">Yearly</button>
+    </div>
+    <span class="add-cat">
+      <input id="new-cat" placeholder="New category, e.g. Pets">
+      <button id="add-cat-btn">Add</button>
+      <button id="manage-cat-btn" class="icon-btn" title="Manage categories">Manage</button>
+    </span>
+  </section>
+
+  <section class="grid two-col">
+    <div class="card spending-card">
+      <div class="spend-head">
+        <div class="spend-figure">
+          <span class="spend-label" id="spend-label-period">Spent</span>
+          <span id="spend-total" class="spend-amount">$0.00</span>
+          <span id="spend-delta" class="spend-delta"></span>
+        </div>
+      </div>
+      <div class="chart-doughnut"><canvas id="pie"></canvas></div>
+      <div id="cat-breakdown" class="cat-breakdown"></div>
+      <div class="show-more" id="breakdown-show-more"></div>
+    </div>
+    <div class="card income-card">
+      <div class="spend-head">
+        <div class="spend-figure">
+          <span class="spend-label" id="income-label-period">Income</span>
+          <span id="spend-income" class="spend-amount income">$0.00</span>
+        </div>
+      </div>
+      <div class="chart-doughnut"><canvas id="income-pie"></canvas></div>
+      <div id="income-breakdown" class="cat-breakdown"></div>
+    </div>
+  </section>
+
+  <section class="grid single">
+    <div class="card">
+      <h2 class="trend-title">Spending vs income over time</h2>
+      <div class="chart-trend"><div class="chart-trend-inner"><canvas id="trend-bar"></canvas></div></div>
+    </div>
+  </section>
+
+  <section class="grid single">
+    <div class="card">
+      <div class="card-head">
+        <h2>Transactions</h2>
+        <div class="txn-tools">
+          <input type="search" id="txn-search" placeholder="🔍 Search merchant…">
+          <label>Category
+            <select id="category-filter"><option value="">All</option></select>
+          </label>
+          <label>Account
+            <select id="account-filter"><option value="">All</option></select>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="expenses-only" checked> Expenses only
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="review-only"> Needs review <span id="review-count" class="count-badge" hidden></span>
+          </label>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="txn-table">
+          <thead>
+            <tr><th data-sort="date">Date</th><th data-sort="merchant_raw">Merchant</th><th data-sort="amount">Amount</th><th data-sort="account_name">Account</th><th data-sort="category">Category</th><th data-sort="classified_by">Source</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="show-more" id="txn-show-more"></div>
+    </div>
+  </section>
+
+  <section class="grid single">
+    <div class="card">
+      <div class="card-head">
+        <h2 id="review-heading">Needs review</h2>
+      </div>
+      <div class="table-wrap">
+        <table id="review-table">
+          <thead>
+            <tr><th data-sort="date">Date</th><th data-sort="merchant_raw">Merchant</th><th data-sort="amount">Amount</th><th data-sort="account_name">Account</th><th data-sort="category">Category</th><th data-sort="classified_by">Source</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p id="review-empty" class="muted" hidden>Nothing needs review. 🎉</p>
+      </div>
+      <div class="show-more" id="review-show-more"></div>
+    </div>
+  </section>
+
+  <section class="grid single">
+    <div class="card">
+      <h2>Recurring &amp; subscriptions <span id="recurring-total" class="recurring-total"></span></h2>
+      <div class="table-wrap">
+        <table id="recurring-table">
+          <thead>
+            <tr><th data-sort="merchant">Merchant</th><th data-sort="kind">Kind</th><th data-sort="cadence">Cadence</th><th data-sort="typical_amount">Amount</th><th data-sort="category">Category</th><th data-sort="occurrences">Seen</th><th data-sort="last_date">Last</th><th data-sort="next_expected">Next expected</th><th data-sort="monthly_cost">Monthly cost</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p id="recurring-empty" class="muted" hidden>No recurring spending detected yet (needs at least 3 charges from the same merchant at a regular interval).</p>
+      </div>
+      <div class="show-more" id="recurring-show-more"></div>
+    </div>
+  </section>
+
+  <section class="grid single">
+    <div class="card">
+      <h2>Top merchants</h2>
+      <div class="table-wrap">
+        <table id="merchant-table">
+          <thead>
+            <tr><th data-sort="merchant">Merchant</th><th data-sort="count">Count</th><th data-sort="total">Total</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p id="merchant-empty" class="muted" hidden>No spending in this period.</p>
+      </div>
+      <div class="show-more" id="merchant-show-more"></div>
+    </div>
+  </section>
+
+  <section class="grid single">
+    <div class="card">
+      <h2>Income <span id="income-total" class="recurring-total"></span></h2>
+      <div class="table-wrap">
+        <table id="income-table">
+          <thead>
+            <tr><th data-sort="date">Date</th><th data-sort="merchant_raw">Source</th><th data-sort="account_name">Account</th><th data-sort="amount">Amount</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p id="income-empty" class="muted" hidden>No income recorded for this period.</p>
+      </div>
+      <div class="show-more" id="income-show-more"></div>
+    </div>
+  </section>
+
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+/* ============================================================
+   Personal Finance Tracker — visual theme
+   Buildless: plain CSS with design tokens + automatic dark mode.
+   ============================================================ */
+
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f1f3f5;
+  --hover: #f7f9fc;
+  --border: #e7e9ee;
+  --border-strong: #d7dae0;
+
+  --text: #111827;
+  --text-2: #374151;
+  --muted: #6b7280;
+  --faint: #9ca3af;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eef4ff;
+  --on-primary: #ffffff;
+
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+  --purple: #7c3aed;
+  --sky: #0369a1;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.07);
+  --shadow-md: 0 10px 30px rgba(16,24,40,.12);
+  --maxw: 1280px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1014;
+    --surface: #171a21;
+    --surface-2: #1e222b;
+    --hover: #1b2029;
+    --border: #272c36;
+    --border-strong: #333a46;
+
+    --text: #e7e9ee;
+    --text-2: #c4cad4;
+    --muted: #98a1b1;
+    --faint: #6b7480;
+
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-soft: #1b2740;
+    --on-primary: #0b1220;
+
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --purple: #a78bfa;
+    --sky: #38bdf8;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-md: 0 12px 36px rgba(0,0,0,.55);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+    "PingFang SC", Roboto, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Header ---------- */
+header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 30;
+}
+.bar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px; padding: 14px 24px;
+  max-width: var(--maxw); margin: 0 auto;
+}
+header h1 {
+  font-size: 18px; font-weight: 650; margin: 0; letter-spacing: -0.01em;
+}
+.actions { display: flex; align-items: center; gap: 10px; }
+
+#status { font-size: 13px; color: var(--muted); min-height: 1em; }
+
+/* ---------- Buttons ---------- */
+button {
+  background: var(--primary); color: var(--on-primary); border: 0;
+  border-radius: var(--radius-sm); padding: 8px 14px; font-size: 14px;
+  font-weight: 550; cursor: pointer; transition: background .12s ease, filter .12s ease;
+}
+button:hover { background: var(--primary-hover); }
+button:active { filter: brightness(.96); }
+button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ⚙ tools menu */
+.menu { position: relative; }
+.icon-btn {
+  background: var(--surface-2); color: var(--text-2); padding: 8px 11px;
+  font-size: 15px; line-height: 1; border: 1px solid var(--border);
+}
+.icon-btn:hover { background: var(--hover); }
+.menu-panel {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 40;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-md);
+  padding: 6px; min-width: 210px; flex-direction: column; gap: 2px;
+}
+.menu-panel:not([hidden]) { display: flex; }
+.menu-panel button {
+  background: transparent; color: var(--text); text-align: left; width: 100%;
+  padding: 9px 10px; font-size: 13px; font-weight: 500; border-radius: 6px;
+}
+.menu-panel button:hover { background: var(--surface-2); }
+.menu-sep {
+  font-size: 11px; color: var(--faint); text-transform: uppercase;
+  letter-spacing: 0.05em; padding: 9px 10px 3px; border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+/* ---------- Controls bar ---------- */
+.controls {
+  display: flex; gap: 12px 14px; align-items: center; padding: 16px 24px;
+  flex-wrap: wrap; max-width: var(--maxw); margin: 0 auto;
+}
+.controls label { font-size: 13px; color: var(--text-2); display: flex; gap: 6px; align-items: center; }
+#new-cat { width: 150px; }
+select, input {
+  padding: 7px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  font-size: 14px; background: var(--surface); color: var(--text);
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+select:focus, input:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.add-cat { display: flex; gap: 6px; }
+.toggle { font-size: 13px; color: var(--text-2); display: flex; gap: 6px; align-items: center; }
+
+/* ---------- Layout / cards ---------- */
+.grid {
+  display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 18px;
+  padding: 0 24px 28px; max-width: var(--maxw); margin: 0 auto;
+}
+.grid.single { grid-template-columns: minmax(0, 1fr); }
+.grid.two-col { grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .grid.two-col { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm);
+  min-width: 0;  /* let the 1fr column shrink so a wide table scrolls inside it
+                    instead of forcing the whole page wider (which broke centering) */
+}
+.card h2 {
+  font-size: 13px; font-weight: 600; margin: 0 0 14px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.card-head h2 { margin: 0; }
+.txn-tools { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.txn-tools label { color: var(--muted); }
+#txn-search { width: 190px; }
+/* keep the filter dropdowns compact — long account names were ballooning the row */
+#category-filter, #account-filter {
+  width: 150px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+}
+.txn-tools label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-2); }
+
+/* segmented period toggle (Monthly / Quarterly / Yearly) */
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 2px; }
+.seg button {
+  background: transparent; color: var(--muted); font-size: 12px; font-weight: 600;
+  padding: 5px 12px; border-radius: 999px;
+}
+.seg button:hover { color: var(--text); background: transparent; }
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+/* ---------- Spending overview ---------- */
+/* fixed height so the Spending and Income cards' doughnuts + breakdown rows
+   start at the same Y and line up row-for-row, even though only the spending
+   card has a "vs last month" delta line */
+.spend-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; min-height: 68px; }
+.spend-figure { display: flex; flex-direction: column; gap: 3px; }
+.spend-figure.right { text-align: right; align-items: flex-end; }
+.spend-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--faint); font-weight: 600;
+}
+.spend-amount { font-size: 27px; font-weight: 750; letter-spacing: -0.02em; line-height: 1.1; }
+.spend-amount.income { font-size: 18px; color: var(--green); }
+.spend-delta { font-size: 12px; font-weight: 600; }
+.spend-delta .up { color: var(--red); }
+.spend-delta .down { color: var(--green); }
+
+/* merged spending widget: doughnut + trend side by side */
+.charts-row { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.chart-doughnut { width: 160px; height: 160px; position: relative; margin: 10px auto 2px; }
+.trend-title { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+.chart-trend { flex: 1 1 340px; min-width: 0; height: 170px; overflow-x: auto; overflow-y: hidden; }
+.chart-trend-inner { height: 100%; position: relative; }  /* width set in JS for scrolling */
+.chart-doughnut canvas, .chart-trend-inner canvas { position: absolute; inset: 0; }
+
+.cat-breakdown { display: flex; flex-direction: column; gap: 1px; margin-top: 12px; }
+.show-more { display: flex; gap: 16px; flex-wrap: wrap; }
+.show-all {
+  background: transparent; color: var(--primary); font-size: 12px; font-weight: 600;
+  padding: 8px; cursor: pointer; width: 100%; text-align: left; border-radius: var(--radius-sm);
+}
+.show-all:hover { background: var(--surface-2); }
+.cat-row {
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name amt" "bar bar";
+  gap: 4px 8px; background: transparent; color: var(--text); text-align: left;
+  padding: 8px 8px; border-radius: var(--radius-sm); cursor: pointer; width: 100%;
+  font-weight: 500;
+}
+.cat-row:hover { background: var(--surface-2); }
+.cat-row.active { background: var(--primary-soft); }
+.cat-name { grid-area: name; display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.cat-amt { grid-area: amt; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.cat-pct { color: var(--faint); font-weight: 500; font-size: 11px; margin-left: 6px; }
+.cat-bar { grid-area: bar; height: 5px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.cat-bar > span { display: block; height: 100%; border-radius: 999px; }
+.dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+
+/* ---------- Tables ---------- */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td {
+  text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+/* Merchant cell: fixed width, truncate long names with an ellipsis so tables
+   don't force horizontal scrolling. Full name shows on hover via the title
+   tooltip (long-press on mobile). */
+.mtext {
+  display: inline-block; max-width: 240px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;
+}
+th {
+  color: var(--faint); font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.03em; font-size: 11px; background: var(--surface);
+}
+th[data-sort] { cursor: pointer; user-select: none; }
+th[data-sort]:hover { color: var(--text-2); }
+th.sorted { color: var(--primary); }
+th.sorted[data-dir="desc"]::after { content: " ▾"; }
+th.sorted[data-dir="asc"]::after { content: " ▴"; }
+tbody tr { transition: background .1s ease; }
+tbody tr:hover { background: var(--hover); }
+td select { font-size: 13px; padding: 4px 6px; }
+/* right-align the Amount column of the transaction table */
+#txn-table td:nth-child(3), #txn-table th:nth-child(3) { text-align: right; }
+#income-table td:nth-child(4), #income-table th:nth-child(4) { text-align: right; }
+#merchant-table td:nth-child(2), #merchant-table th:nth-child(2),
+#merchant-table td:nth-child(3), #merchant-table th:nth-child(3) { text-align: right; }
+
+/* ---------- Badges ---------- */
+.badge {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+  background: var(--surface-2); color: var(--muted); white-space: nowrap;
+}
+.badge.claude { background: color-mix(in srgb, var(--amber) 15%, transparent); color: var(--amber); }
+.badge.manual { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--green); }
+.badge.rule { background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--primary); }
+.badge.excluded { background: var(--surface-2); color: var(--faint); }
+.badge.subscription { background: color-mix(in srgb, var(--purple) 16%, transparent); color: var(--purple); }
+.badge.bill { background: color-mix(in srgb, var(--sky) 16%, transparent); color: var(--sky); }
+.badge.ended { background: var(--surface-2); color: var(--faint); }
+
+.excluded-row td { color: var(--faint); }
+.inactive-row td { color: var(--faint); }
+.offset { color: var(--green); font-weight: 600; }
+.review { color: var(--amber); cursor: help; }
+.muted { color: var(--faint); font-size: 13px; }
+.recurring-total { font-weight: 400; color: var(--muted); font-size: 13px; }
+.year-select { margin-left: 8px; font-size: 13px; }
+.delta-up { color: var(--red); font-weight: 600; }
+.delta-down { color: var(--green); font-weight: 600; }
+
+.count-badge {
+  background: var(--amber); color: #fff; border-radius: 999px;
+  font-size: 11px; font-weight: 600; padding: 1px 7px; margin-left: 2px;
+}
+.review-done {
+  background: var(--surface-2); color: var(--green); border: 1px solid var(--border-strong);
+  border-radius: 6px; padding: 1px 6px; font-size: 11px; margin-left: 4px; cursor: pointer;
+}
+.review-done:hover { background: color-mix(in srgb, var(--green) 14%, transparent); }
+
+/* ---------- Correction mode chooser / category dialog ---------- */
+.mode-overlay {
+  position: fixed; inset: 0; background: rgba(8,12,20,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+  backdrop-filter: blur(2px);
+}
+.mode-modal {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px; width: 440px;
+  max-width: calc(100vw - 32px); box-shadow: var(--shadow-md);
+}
+.mode-modal p { margin: 0 0 16px; font-size: 14px; }
+.mode-btns { display: flex; gap: 10px; }
+.mode-btns button { flex: 1; padding: 13px; line-height: 1.45; }
+.mode-btns small { font-weight: 400; opacity: 0.85; font-size: 11px; }
+.mode-note textarea {
+  width: 100%; font-size: 13px; padding: 9px; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); resize: vertical; font-family: inherit;
+  background: var(--surface); color: var(--text);
+}
+.mode-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.rule-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.rule-pattern {
+  width: 100%; font-size: 14px; padding: 9px 10px; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); font-family: inherit; box-sizing: border-box;
+  background: var(--surface); color: var(--text); text-transform: uppercase;
+}
+.rule-hint { font-size: 12px; margin: 7px 0 0; }
+.mode-cancel { background: var(--surface-2); color: var(--text-2); }
+.mode-cancel:hover { background: var(--hover); }
+
+/* Manage categories */
+.cat-mgr { width: 480px; }
+.data-tabs { display: flex; gap: 6px; margin: 4px 0 8px; }
+.data-tabs button { padding: 5px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.data-tabs button.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.cat-mgr-row .d-del { background: color-mix(in srgb, var(--red) 14%, transparent); color: var(--red); }
+.cat-list { display: flex; flex-direction: column; gap: 1px; max-height: 55vh; overflow-y: auto; margin: 6px 0 14px; }
+.cat-mgr-row { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: var(--radius-sm); font-size: 13px; }
+.cat-mgr-row:hover { background: var(--surface-2); }
+.cat-mgr-name { font-weight: 600; }
+.cat-mgr-meta { color: var(--faint); font-size: 11px; }
+.cat-mgr-actions { margin-left: auto; display: flex; gap: 6px; }
+.cat-mgr-row button { background: var(--surface-2); color: var(--text-2); font-size: 12px; font-weight: 600; padding: 4px 10px; }
+.cat-mgr-row button:hover { background: var(--hover); }
+.cat-mgr-row .cat-do-del { background: color-mix(in srgb, var(--red) 14%, transparent); color: var(--red); }
+.cat-mgr-row .cat-edit, .cat-mgr-row .cat-move { font-size: 13px; padding: 5px 8px; }
+.cat-meaning-edit { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+.cat-meaning-edit textarea {
+  width: 100%; font-size: 13px; padding: 8px; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); resize: vertical; font-family: inherit;
+  background: var(--surface); color: var(--text);
+}
+.cat-meaning-edit .cat-mgr-actions { margin-left: 0; }
+
+/* ---------- Mobile / narrow screens ---------- */
+@media (max-width: 640px) {
+  header h1 { font-size: 16px; }
+  .bar, .controls { padding: 12px 14px; }
+  .grid { padding: 0 14px 20px; gap: 14px; }
+  .card { padding: 14px; }
+  .spend-amount { font-size: 24px; }
+  .spend-amount.income { font-size: 16px; }
+
+  /* spending widget: doughnut on top (kept square/centered), trend below */
+  .charts-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .chart-doughnut { flex: none; align-self: center; width: 170px; height: 170px; }
+  .chart-trend { flex: none; width: 100%; height: 160px; }
+
+  /* filter/search bars: fill the width, wrap tidily */
+  .controls, .txn-tools { width: 100%; }
+  #txn-search { flex: 1 1 100%; width: auto; }
+  #category-filter, #account-filter { flex: 1 1 42%; width: auto; }
+  .add-cat { flex: 1 1 100%; }
+  #new-cat { flex: 1; width: auto; }
+  .seg { flex: 1 1 100%; justify-content: center; }
+
+  /* dialogs take the full width */
+  .mode-modal, .cat-mgr { width: 100%; }
+  .mode-btns { flex-direction: column; }
+
+  /* wide tables: shrink, let text wrap, and drop secondary columns so each
+     widget fits the screen without horizontal scrolling */
+  table { font-size: 12px; }
+  th, td { padding: 8px 5px; white-space: normal; }
+  .mtext { max-width: 150px; }
+  td select { max-width: 118px; }
+  /* Transactions + Needs review — hide Account (4) + Source (6) */
+  #txn-table th:nth-child(4), #txn-table td:nth-child(4),
+  #txn-table th:nth-child(6), #txn-table td:nth-child(6),
+  #review-table th:nth-child(4), #review-table td:nth-child(4),
+  #review-table th:nth-child(6), #review-table td:nth-child(6) { display: none; }
+  /* Recurring — keep Merchant(1), Cadence(3), Amount(4), Monthly cost(9) */
+  #recurring-table th:nth-child(2), #recurring-table td:nth-child(2),
+  #recurring-table th:nth-child(5), #recurring-table td:nth-child(5),
+  #recurring-table th:nth-child(6), #recurring-table td:nth-child(6),
+  #recurring-table th:nth-child(7), #recurring-table td:nth-child(7),
+  #recurring-table th:nth-child(8), #recurring-table td:nth-child(8) { display: none; }
+  /* Income — hide Account (3) */
+  #income-table th:nth-child(3), #income-table td:nth-child(3) { display: none; }
+}
