@@ -24,7 +24,7 @@ live in a local SQLite file (`finance.db`) and never leave your computer.
   credit-card payments.
 - **You teach it in plain English.** When you correct a transaction you choose:
   *just this once*, *a fixed rule* (the whole merchant or a keyword substring like
-  `MT LAW`), or *teach Claude a pattern* (a line appended to
+  `MT LAW LLC`), or *teach Claude a pattern* (a line appended to
   `categorization_guide.md`). Saved rules are free and deterministic; the guide
   handles the nuanced cases.
 - **Review queue that learns.** Transfers, income, and uncertain rows land in a
