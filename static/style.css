@@ -328,6 +328,18 @@ td select { font-size: 13px; padding: 4px 6px; }
 .mode-cancel { background: var(--surface-2); color: var(--text-2); }
 .mode-cancel:hover { background: var(--hover); }
 
+/* First-run setup dialog */
+.mode-overlay[hidden] { display: none; }  /* hidden attr must beat display:flex */
+.setup-modal { width: 540px; }
+.setup-modal h2 { margin: 0 0 10px; font-size: 17px; }
+.setup-modal ul, .setup-modal ol { padding-left: 18px; margin: 0 0 12px; }
+.setup-modal li { margin-bottom: 8px; line-height: 1.55; font-size: 13.5px; }
+.setup-modal code {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; font-size: 12px;
+}
+.setup-modal a { color: var(--primary); }
+
 /* Manage categories */
 .cat-mgr { width: 480px; }
 .data-tabs { display: flex; gap: 6px; margin: 4px 0 8px; }

@@ -199,6 +199,32 @@ def index():
     return render_template("index.html")
 
 
+# ---------- First-run setup check ----------
+
+_PLACEHOLDERS = {"your_plaid_client_id", "your_plaid_secret", "your_plaid_sandbox_secret",
+                 "sk-ant-your-key", "change_me", "change-me"}
+
+
+def _configured(value: str | None) -> bool:
+    v = (value or "").strip()
+    return bool(v) and v not in _PLACEHOLDERS and not v.startswith("your_")
+
+
+@app.route("/api/setup_status")
+def api_setup_status():
+    """Report whether the required API keys are configured. Re-reads .env on
+    every call so the user can fill it in and click Recheck without
+    restarting the app."""
+    load_dotenv(override=True)
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    return jsonify({
+        "plaid": _configured(os.environ.get("PLAID_CLIENT_ID"))
+                 and _configured(os.environ.get("PLAID_SECRET")),
+        "anthropic": _configured(anthropic_key) and anthropic_key.startswith("sk-ant-"),
+        "plaid_env": os.environ.get("PLAID_ENV", "sandbox"),
+    })
+
+
 # ---------- Plaid Link (initial auth, run on computer) ----------
 
 @app.route("/api/create_link_token", methods=["POST"])

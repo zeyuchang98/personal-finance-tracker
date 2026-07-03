@@ -1059,11 +1059,56 @@ document.querySelectorAll("#txn-table th[data-sort]").forEach((th) => {
   };
 });
 
+// ---------- First-run setup check ----------
+async function checkSetup() {
+  let s;
+  try {
+    s = await api("/api/setup_status");
+  } catch (e) {
+    return true;  // endpoint unavailable (old backend) -- don't block the app
+  }
+  const missing = [];
+  if (!s.plaid) {
+    missing.push(
+      '<li><b>Plaid</b> — <code>PLAID_CLIENT_ID</code> + <code>PLAID_SECRET</code>: ' +
+      'sign up free at <a href="https://dashboard.plaid.com" target="_blank" rel="noopener">dashboard.plaid.com</a>, ' +
+      'then copy both from <i>Developers → Keys</i>. New accounts include a free ' +
+      'Trial plan (up to 10 real banks, no review needed).</li>');
+  }
+  if (!s.anthropic) {
+    missing.push(
+      '<li><b>Anthropic</b> — <code>ANTHROPIC_API_KEY</code>: create one at ' +
+      '<a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> ' +
+      '(<i>API keys</i>). Used to auto-categorize new merchants; a full first ' +
+      'sync costs a few cents.</li>');
+  }
+  if (missing.length) {
+    $("#setup-missing").innerHTML = missing.join("");
+    $("#setup-modal").hidden = false;
+  }
+  return missing.length === 0;
+}
+
+$("#setup-recheck").onclick = async () => {
+  const ok = await checkSetup();
+  if (ok) {
+    $("#setup-modal").hidden = true;
+    setStatus("Keys look good — connect a bank to get started.");
+  } else {
+    setStatus("Still missing keys — see the dialog.");
+  }
+};
+$("#setup-dismiss").onclick = () => { $("#setup-modal").hidden = true; };
+
 // init: render the saved data immediately (fast), then auto-sync once in the
 // background so opening the app shows fresh data without a manual click.
+// If API keys aren't configured yet, show the setup dialog and skip the sync.
 (async () => {
+  const configured = await checkSetup();
   await loadCategories();
   await loadAccounts();
   await refresh();
-  doSync();  // not awaited: UI is usable right away, updates when sync returns
+  if (configured) {
+    doSync();  // not awaited: UI is usable right away, updates when sync returns
+  }
 })();

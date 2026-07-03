@@ -178,6 +178,27 @@
     </div>
   </section>
 
+  <div id="setup-modal" class="mode-overlay" hidden>
+    <div class="mode-modal setup-modal">
+      <h2>Welcome! A quick setup first</h2>
+      <p>The app needs two API keys to work. Add the missing one(s) to the
+        <code>.env</code> file in the project folder (copy
+        <code>.env.example</code> to <code>.env</code> if it doesn't exist
+        yet):</p>
+      <ul id="setup-missing"></ul>
+      <ol class="setup-steps">
+        <li>Open <code>.env</code> in any text editor and paste the key(s) in.</li>
+        <li>Make sure <code>PLAID_ENV</code> matches your Plaid secret
+          (<code>production</code> for real banks, <code>sandbox</code> for test data).</li>
+        <li>Click <b>Recheck</b> — no restart needed.</li>
+      </ol>
+      <div class="mode-actions">
+        <button id="setup-recheck">Recheck</button>
+        <button id="setup-dismiss" class="mode-cancel">I'll do it later</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
   <script src="/static/app.js"></script>
 </body>
