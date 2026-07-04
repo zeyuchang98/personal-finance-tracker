@@ -935,4 +935,9 @@ def api_correct_category(txn_id):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    # FLASK_DEBUG=0 is used by the launchd background service (no reloader);
+    # default stays debug for development. HOST=127.0.0.1 keeps the service
+    # reachable from this machine only (not the whole wifi network).
+    debug = os.environ.get("FLASK_DEBUG", "1") == "1"
+    host = os.environ.get("HOST", "127.0.0.1" if not debug else "0.0.0.0")
+    app.run(host=host, port=port, debug=debug)
