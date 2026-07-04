@@ -921,6 +921,12 @@ function renderTxns() {
     // (refunds / reimbursements / transfers / income / ignored).
     return t.is_spending === 1 && t.signed_amount > 0;
   });
+  // total of the CURRENTLY FILTERED rows (all of them, not just the ones
+  // shown before "Show all"): spending rows net of offsets (refunds etc.).
+  const total = visible.reduce(
+    (a, t) => a + (t.is_spending === 1 ? t.signed_amount : 0), 0);
+  $("#txn-total").textContent =
+    visible.length ? `${visible.length} txns · total ${fmt(total)}` : "";
   for (const t of visible.slice(0, txnShown)) tbody.appendChild(buildTxnRow(t));
   wireTxnBody(tbody, reloadTables);
   // reflect the active sort on the column headers
